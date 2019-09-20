@@ -1,0 +1,15 @@
+   @Test
+    public void testfetchCustomerInfo() throws IOException, URISyntaxException {
+        String respContent = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader()
+                .getResource("custInfoResponse.json").toURI())));
+        UserBase userBase=new UserBase();
+        userBase.setFNumber("16615490");
+        when(userService.getUserDetails(Mockito.any())).thenReturn(Optional.of(userBase));
+        when(restTemplate.exchange(contains(otpConfig.getCustomerInfoUrl()), Mockito.any(), Mockito.any(),
+                Mockito.eq(String.class)))
+        .thenReturn(new ResponseEntity<String>(respContent, HttpStatus.OK));
+        
+        CustomerInfoResponse response = otpService.fetchCustomerInfo(generateOtpRequest);
+        assertEquals("test@test.es", response.getEmail());
+        assertEquals("ZOLOFSKI", response.getFirstName());
+    }
